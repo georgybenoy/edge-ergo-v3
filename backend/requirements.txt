@@ -1,0 +1,12 @@
+# EdgeErgo V3 Hosted Backend Dependencies
+# Pinned for reproducible Render production deployment
+fastapi==0.111.1
+uvicorn[standard]==0.30.6
+pydantic==2.13.5
+pydantic-settings==2.3.4
+sqlalchemy==2.0.38
+alembic==1.13.2
+asyncpg==0.29.0
+pyjwt[crypto]==2.10.1
+cryptography==45.0.5
+httpx==0.27.2

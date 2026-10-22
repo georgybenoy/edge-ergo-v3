@@ -1,0 +1,41 @@
+name: Deployment Smoke Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      api_url:
+        description: "Hosted API Base URL (e.g., https://edge-ergo-api.onrender.com)"
+        required: true
+        default: "https://edge-ergo-api.onrender.com"
+      frontend_url:
+        description: "Web Dashboard Base URL (e.g., https://edge-ergo-dashboard.onrender.com)"
+        required: true
+        default: "https://edge-ergo-dashboard.onrender.com"
+
+jobs:
+  smoke-test:
+    name: Run Smoke Test Suite
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install httpx
+
+      - name: Execute Smoke Tests
+        env:
+          API_URL: ${{ github.event.inputs.api_url }}
+          FRONTEND_URL: ${{ github.event.inputs.frontend_url }}
+          BEARER_TOKEN: ${{ secrets.SMOKE_TEST_BEARER_TOKEN }}
+          DEVICE_CREDENTIAL: ${{ secrets.SMOKE_TEST_DEVICE_CREDENTIAL }}
+        run: |
+          python scripts/smoke_test.py

@@ -1,0 +1,112 @@
+# EdgeErgo V3 — Render Infrastructure as Code Blueprint
+# Reference: https://render.com/docs/blueprint-spec
+# NOTE: Never commit secret values to this file. All secrets use `sync: false`
+# and are populated securely via the Render Dashboard or Render CLI.
+
+# ==============================================================================
+# INFRASTRUCTURE NOTES & DEPLOYMENT STRATEGY
+# ==============================================================================
+# 1. Plan & Cold Start Behavior:
+#    - Starter Plan ($7/mo recommended for production): Always-on, 512MB RAM,
+#      zero-downtime rolling deploys, zero cold starts.
+#    - Free Tier: Spins down after 15 minutes of inactivity. First incoming request
+#      or device sync will experience ~50s spin-up delay. EdgeErgo edge-agents
+#      seamlessly tolerate this via truncated exponential backoff with jitter
+#      (SyncWorker retries without dropping or duplicating queue data).
+# 2. Health Checks & Deployment Lifecycle:
+#    - /health/ready is chosen over /health/live because Render uses the health check
+#      path for rolling deploys. Using /health/ready ensures database connectivity
+#      (via SELECT 1 on the pooler) is verified before Render routes live traffic
+#      or terminates previous deployment containers.
+# 3. Region Selection:
+#    - Set to 'oregon' (US West) to match Supabase US West default region for
+#      sub-5ms connection pooler latency. Can be changed to 'frankfurt' (EU Central)
+#      for European enterprise deployments.
+# ==============================================================================
+
+services:
+  # ----------------------------------------------------------------------------
+  # 1. Hosted API Backend (FastAPI Python Web Service)
+  # ----------------------------------------------------------------------------
+  - type: web
+    name: edge-ergo-api
+    runtime: python
+    rootDir: backend
+    region: oregon
+    plan: starter
+    buildCommand: pip install -r requirements.txt && pip install .
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips='*'
+    healthCheckPath: /health/ready
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.11
+      - key: APP_ENV
+        value: production
+      - key: API_V1_PREFIX
+        value: /api/v1
+      - key: LOG_LEVEL
+        value: INFO
+      - key: ENABLE_API_DOCS
+        value: "false"
+      - key: FRONTEND_ORIGIN
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_JWT_ISSUER
+        sync: false
+      - key: SUPABASE_JWKS_URL
+        sync: false
+      - key: SUPABASE_JWT_AUDIENCE
+        value: authenticated
+      - key: DATABASE_URL
+        sync: false
+      - key: MAX_BATCH_SIZE
+        value: "100"
+      - key: MAX_EXPORT_ROWS
+        value: "10000"
+      - key: MAX_REQUEST_BODY_SIZE_BYTES
+        value: "2097152"
+      - key: DEVICE_ONLINE_WINDOW_SECONDS
+        value: "180"
+      - key: ENROLLMENT_RATE_LIMIT_PER_MINUTE
+        value: "10"
+      - key: FAILED_AUTH_RATE_LIMIT_PER_MINUTE
+        value: "20"
+      - key: ENROLLMENT_TOKEN_TTL_MINUTES
+        value: "15"
+
+  # ----------------------------------------------------------------------------
+  # 2. Web Dashboard (React + Vite Static Site)
+  # ----------------------------------------------------------------------------
+  - type: static
+    name: edge-ergo-dashboard
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /*
+        name: Content-Security-Policy
+        value: "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co https://*.onrender.com; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: Permissions-Policy
+        value: camera=(), microphone=(), geolocation=()
+    envVars:
+      - key: VITE_API_BASE_URL
+        sync: false
+      - key: VITE_SUPABASE_URL
+        sync: false
+      - key: VITE_SUPABASE_PUBLISHABLE_KEY
+        sync: false

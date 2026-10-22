@@ -1,0 +1,91 @@
+# Environment variables (keep examples tracked, ignore real secrets)
+.env*
+!.env.example
+!**/.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.venv/
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+/lib/
+/lib64/
+!frontend/src/lib/
+!frontend/src/lib/**
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Testing & Quality
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+coverage/
+htmlcov/
+.cache/
+scratch/
+
+# PyInstaller & Packaging build artifacts
+*.manifest
+!edge-agent/edge-ergo.spec
+
+# SQLite & local databases
+*.sqlite
+*.sqlite3
+*.sqlite-shm
+*.sqlite-wal
+*.db
+*.db-shm
+*.db-wal
+
+# Video/Camera & Raw Frames (Privacy Boundary: Never commit raw media)
+*.mp4
+*.avi
+*.mkv
+*.mov
+*.wmv
+*.flv
+*.webm
+*.jpg
+*.jpeg
+*.png
+*.bmp
+*.raw
+captures/
+frames/
+recordings/
+
+# Logs
+logs/
+*.log
+
+# Node & Frontend
+node_modules/
+frontend/dist/
+dist/
+.eslintcache
+*.tsbuildinfo
+
+# OS & IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo

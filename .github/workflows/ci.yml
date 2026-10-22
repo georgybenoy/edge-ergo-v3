@@ -1,0 +1,167 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  # 1. Secret Pattern Check (Must fail on any committed secret)
+  secrets-check:
+    name: Secret Scanner
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Run Secret Scanner
+        run: python scripts/check_secrets.py
+
+  # 2. Hosted API Backend (FastAPI, Ruff, Mypy, Pytest)
+  backend:
+    name: Backend (FastAPI)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: "pip"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Lint (Ruff)
+        run: ruff check app tests
+
+      - name: Type Check (Mypy)
+        run: mypy app tests
+
+      - name: Run Tests (Pytest)
+        run: pytest tests
+
+  # 3. Windows Edge Agent (Cross-platform boundary checks on Windows & Ubuntu)
+  edge-agent:
+    name: Edge Agent (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    defaults:
+      run:
+        working-directory: edge-agent
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: "pip"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Lint (Ruff)
+        run: ruff check edge_ergo tests
+
+      - name: Type Check (Mypy)
+        run: mypy edge_ergo tests
+
+      - name: Run Boundary & Unit Tests (Pytest)
+        run: pytest tests
+
+  # 4. Web Dashboard Frontend (React, Vite, TypeScript, Vitest)
+  frontend:
+    name: Frontend (React & Vite)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Lint (ESLint)
+        run: npm run lint
+
+      - name: Verify API Types (OpenAPI Contract)
+        run: npm run check:api-types
+
+      - name: Type Check (TypeScript)
+        run: npx tsc -b
+
+      - name: Run Tests (Vitest)
+        run: npm run test
+
+      - name: Build Production Assets
+        run: npm run build
+
+  # 5. Database Migrations & RLS Verification
+  db-migrations:
+    name: Database Migrations & RLS
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: edgeergo_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: "pip"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run Database Migration & RLS Tests
+        env:
+          TEST_DATABASE_URL: postgresql://postgres:password@localhost:5432/edgeergo_test
+        run: pytest tests/test_db_migrations.py tests/test_db_rls.py -v

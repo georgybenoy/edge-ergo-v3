@@ -1,0 +1,19 @@
+# EdgeErgo V3 — Disposable PostgreSQL Container for Database Tests
+# Run locally with: docker compose -f docker-compose.test.yml up -d
+services:
+  postgres-test:
+    image: postgres:15-alpine
+    container_name: edgeergo-postgres-test
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: edgeergo_test
+    ports:
+      - "5432:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d edgeergo_test"]
+      interval: 3s
+      timeout: 3s
+      retries: 5

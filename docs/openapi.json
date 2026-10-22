@@ -1,0 +1,2378 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "EdgeErgo Hosted API",
+    "version": "3.0.0"
+  },
+  "paths": {
+    "/health/live": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Health Live",
+        "description": "Liveness probe indicating process is running.",
+        "operationId": "health_live_health_live_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Health Live Health Live Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Health Ready",
+        "description": "Readiness probe checking database connectivity without leaking connection secrets.",
+        "operationId": "health_ready_health_ready_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Get Me",
+        "description": "Returns the authenticated user's identity, active organization, and assigned role.",
+        "operationId": "get_me_api_v1_me_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-organization-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Organization-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserMeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/devices/enrollment-tokens": {
+      "post": {
+        "tags": [
+          "Devices"
+        ],
+        "summary": "Create Enrollment Token",
+        "description": "Creates a short-lived single-use enrollment token. Plaintext returned once.",
+        "operationId": "create_enrollment_token_api_v1_devices_enrollment_tokens_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-organization-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Organization-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenCreateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/devices/enroll": {
+      "post": {
+        "tags": [
+          "Devices"
+        ],
+        "summary": "Enroll Device",
+        "description": "Atomically consumes an enrollment token and registers a new device.\n\nReturns the device credential once. Rate-limited by IP.",
+        "operationId": "enroll_device_api_v1_devices_enroll_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceEnrollRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceEnrollResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/devices/heartbeat": {
+      "post": {
+        "tags": [
+          "Devices"
+        ],
+        "summary": "Device Heartbeat",
+        "description": "Records health telemetry from an authenticated workstation agent.",
+        "operationId": "device_heartbeat_api_v1_devices_heartbeat_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceHeartbeatRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceHeartbeatResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/devices": {
+      "get": {
+        "tags": [
+          "Devices"
+        ],
+        "summary": "List Devices",
+        "description": "Lists all workstation devices for the authenticated organization with safe fields only.",
+        "operationId": "list_devices_api_v1_devices_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-organization-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Organization-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DeviceListItem"
+                  },
+                  "title": "Response List Devices Api V1 Devices Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/devices/{device_id}/revoke": {
+      "post": {
+        "tags": [
+          "Devices"
+        ],
+        "summary": "Revoke Device",
+        "description": "Revokes a workstation's credentials, preventing all future telemetry ingestion.",
+        "operationId": "revoke_device_api_v1_devices__device_id__revoke_post",
+        "parameters": [
+          {
+            "name": "device_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Device Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-organization-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Organization-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceRevokeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/devices/{device_id}/rotate-credential": {
+      "post": {
+        "tags": [
+          "Devices"
+        ],
+        "summary": "Rotate Device Credential",
+        "description": "Generates a new secret credential for an active device.",
+        "operationId": "rotate_device_credential_api_v1_devices__device_id__rotate_credential_post",
+        "parameters": [
+          {
+            "name": "device_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Device Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-organization-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Organization-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceRotateCredentialResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assessments/batch": {
+      "post": {
+        "tags": [
+          "Assessments"
+        ],
+        "summary": "Ingest Assessment Batch",
+        "description": "Ingests a bounded batch of edge ergonomic assessment records.\n\nEnforces idempotent ingestion via ON CONFLICT (device_id, event_id) DO NOTHING.\nIndividual malformed events are marked as rejected without aborting the batch.",
+        "operationId": "ingest_assessment_batch_api_v1_assessments_batch_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchIngestRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchIngestResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assessments": {
+      "get": {
+        "tags": [
+          "Assessments"
+        ],
+        "summary": "List Assessments",
+        "description": "Lists organization-scoped assessments with bounded filtering and pagination.",
+        "operationId": "list_assessments_api_v1_assessments_get",
+        "parameters": [
+          {
+            "name": "device_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Device Id"
+            }
+          },
+          {
+            "name": "from_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "From Date"
+            }
+          },
+          {
+            "name": "to_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "To Date"
+            }
+          },
+          {
+            "name": "validity",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Validity"
+            }
+          },
+          {
+            "name": "scoring_version",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Scoring Version"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-organization-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Organization-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssessmentListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dashboard/summary": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Get Dashboard Summary",
+        "description": "Calculates aggregated ergonomic indicators, trend progression, and fleet connectivity.\n\nEvery metric explicitly carries its definition and sample count.\nAverage score is computed strictly over valid observations for rula_v1_screening.",
+        "operationId": "get_dashboard_summary_api_v1_dashboard_summary_get",
+        "parameters": [
+          {
+            "name": "device_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Device Id"
+            }
+          },
+          {
+            "name": "from_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "From Date"
+            }
+          },
+          {
+            "name": "to_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "To Date"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-organization-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Organization-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardSummaryResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports/preview": {
+      "get": {
+        "tags": [
+          "Reports"
+        ],
+        "summary": "Preview Report Scope",
+        "description": "Provides a fast, server-calculated preview of exportable report scope.\n\nComputes matching row count, valid vs invalid breakdown, and time boundaries.",
+        "operationId": "preview_report_scope_api_v1_reports_preview_get",
+        "parameters": [
+          {
+            "name": "device_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Device Id"
+            }
+          },
+          {
+            "name": "from_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "From Date"
+            }
+          },
+          {
+            "name": "to_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "To Date"
+            }
+          },
+          {
+            "name": "validity",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Validity"
+            }
+          },
+          {
+            "name": "scoring_version",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Scoring Version"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-organization-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Organization-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportScopePreviewResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports/assessments.csv": {
+      "get": {
+        "tags": [
+          "Reports"
+        ],
+        "summary": "Export Assessments Csv",
+        "description": "Streams organization-scoped ergonomic assessments as CSV with injection safeguards.\n\nFilters are bounded to a maximum window of 366 days and exports up to MAX_EXPORT_ROWS.\nCells starting with formula indicators are safely escaped.",
+        "operationId": "export_assessments_csv_api_v1_reports_assessments_csv_get",
+        "parameters": [
+          {
+            "name": "device_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Device Id"
+            }
+          },
+          {
+            "name": "from_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "From Date"
+            }
+          },
+          {
+            "name": "to_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "To Date"
+            }
+          },
+          {
+            "name": "validity",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Validity"
+            }
+          },
+          {
+            "name": "scoring_version",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Scoring Version"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-organization-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Organization-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/audit-events": {
+      "get": {
+        "tags": [
+          "Audit"
+        ],
+        "summary": "List Audit Events",
+        "description": "Lists organization audit events (admin only).\nAll sensitive fields are guaranteed scrubbed.",
+        "operationId": "list_audit_events_api_v1_audit_events_get",
+        "parameters": [
+          {
+            "name": "target_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Target Id"
+            }
+          },
+          {
+            "name": "target_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Target Type"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-organization-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Organization-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuditListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AssessmentEventIngestItem": {
+        "properties": {
+          "event_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Event Id"
+          },
+          "captured_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Captured At"
+          },
+          "scoring_method": {
+            "type": "string",
+            "maxLength": 50,
+            "title": "Scoring Method"
+          },
+          "scoring_version": {
+            "type": "string",
+            "maxLength": 20,
+            "title": "Scoring Version"
+          },
+          "validity": {
+            "type": "string",
+            "enum": [
+              "valid",
+              "insufficient",
+              "invalid"
+            ],
+            "title": "Validity"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 15.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score"
+          },
+          "neck_score": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 6.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Neck Score"
+          },
+          "trunk_score": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 6.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trunk Score"
+          },
+          "upper_arm_score": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 6.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Upper Arm Score"
+          },
+          "guidance_codes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Guidance Codes"
+          },
+          "software_version": {
+            "type": "string",
+            "maxLength": 32,
+            "title": "Software Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "event_id",
+          "captured_at",
+          "scoring_method",
+          "scoring_version",
+          "validity",
+          "software_version"
+        ],
+        "title": "AssessmentEventIngestItem"
+      },
+      "AssessmentListItem": {
+        "properties": {
+          "event_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Event Id"
+          },
+          "device_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Device Id"
+          },
+          "captured_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Captured At"
+          },
+          "scoring_method": {
+            "type": "string",
+            "title": "Scoring Method"
+          },
+          "scoring_version": {
+            "type": "string",
+            "title": "Scoring Version"
+          },
+          "validity": {
+            "type": "string",
+            "title": "Validity"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score"
+          },
+          "neck_score": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Neck Score"
+          },
+          "trunk_score": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trunk Score"
+          },
+          "upper_arm_score": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Upper Arm Score"
+          },
+          "guidance_codes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Guidance Codes"
+          },
+          "software_version": {
+            "type": "string",
+            "title": "Software Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "event_id",
+          "device_id",
+          "captured_at",
+          "scoring_method",
+          "scoring_version",
+          "validity",
+          "score",
+          "neck_score",
+          "trunk_score",
+          "upper_arm_score",
+          "guidance_codes",
+          "software_version"
+        ],
+        "title": "AssessmentListItem"
+      },
+      "AssessmentListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AssessmentListItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "AssessmentListResponse"
+      },
+      "AuditEventItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "action": {
+            "type": "string",
+            "title": "Action"
+          },
+          "target_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Type"
+          },
+          "target_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Id"
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metadata"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "action",
+          "target_type",
+          "target_id",
+          "metadata",
+          "created_at"
+        ],
+        "title": "AuditEventItem"
+      },
+      "AuditListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AuditEventItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items",
+          "total"
+        ],
+        "title": "AuditListResponse"
+      },
+      "BatchEventResultItem": {
+        "properties": {
+          "event_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Event Id"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "accepted",
+              "duplicate",
+              "rejected"
+            ],
+            "title": "Status"
+          },
+          "reason_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason Code"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "event_id",
+          "status"
+        ],
+        "title": "BatchEventResultItem"
+      },
+      "BatchIngestRequest": {
+        "properties": {
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/AssessmentEventIngestItem"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "title": "Events"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "events"
+        ],
+        "title": "BatchIngestRequest"
+      },
+      "BatchIngestResponse": {
+        "properties": {
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/BatchEventResultItem"
+            },
+            "type": "array",
+            "title": "Results"
+          },
+          "total_accepted": {
+            "type": "integer",
+            "title": "Total Accepted"
+          },
+          "total_duplicates": {
+            "type": "integer",
+            "title": "Total Duplicates"
+          },
+          "total_rejected": {
+            "type": "integer",
+            "title": "Total Rejected"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "results",
+          "total_accepted",
+          "total_duplicates",
+          "total_rejected"
+        ],
+        "title": "BatchIngestResponse"
+      },
+      "DashboardSummaryResponse": {
+        "properties": {
+          "total_assessments": {
+            "type": "integer",
+            "title": "Total Assessments"
+          },
+          "valid_count": {
+            "type": "integer",
+            "title": "Valid Count"
+          },
+          "insufficient_count": {
+            "type": "integer",
+            "title": "Insufficient Count"
+          },
+          "invalid_count": {
+            "type": "integer",
+            "title": "Invalid Count"
+          },
+          "active_devices_count": {
+            "type": "integer",
+            "title": "Active Devices Count"
+          },
+          "online_devices_count": {
+            "type": "integer",
+            "title": "Online Devices Count"
+          },
+          "average_rula_score": {
+            "$ref": "#/components/schemas/MetricDefinition"
+          },
+          "scoring_method": {
+            "type": "string",
+            "title": "Scoring Method"
+          },
+          "scoring_version": {
+            "type": "string",
+            "title": "Scoring Version"
+          },
+          "daily_trend": {
+            "items": {
+              "$ref": "#/components/schemas/DashboardTrendPoint"
+            },
+            "type": "array",
+            "title": "Daily Trend",
+            "default": []
+          },
+          "posture_breakdown": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PostureBreakdown"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "total_assessments",
+          "valid_count",
+          "insufficient_count",
+          "invalid_count",
+          "active_devices_count",
+          "online_devices_count",
+          "average_rula_score",
+          "scoring_method",
+          "scoring_version"
+        ],
+        "title": "DashboardSummaryResponse"
+      },
+      "DashboardTrendPoint": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "title": "Date"
+          },
+          "valid_count": {
+            "type": "integer",
+            "title": "Valid Count"
+          },
+          "insufficient_count": {
+            "type": "integer",
+            "title": "Insufficient Count"
+          },
+          "invalid_count": {
+            "type": "integer",
+            "title": "Invalid Count"
+          },
+          "average_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Average Score"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "date",
+          "valid_count",
+          "insufficient_count",
+          "invalid_count"
+        ],
+        "title": "DashboardTrendPoint"
+      },
+      "DeviceEnrollRequest": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 10,
+            "title": "Token"
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Label"
+          },
+          "agent_version": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1,
+            "title": "Agent Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "token",
+          "label",
+          "agent_version"
+        ],
+        "title": "DeviceEnrollRequest"
+      },
+      "DeviceEnrollResponse": {
+        "properties": {
+          "device_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Device Id"
+          },
+          "public_id": {
+            "type": "string",
+            "title": "Public Id"
+          },
+          "credential": {
+            "type": "string",
+            "title": "Credential"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "organization_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Organization Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "device_id",
+          "public_id",
+          "credential",
+          "label",
+          "organization_id"
+        ],
+        "title": "DeviceEnrollResponse"
+      },
+      "DeviceHeartbeatRequest": {
+        "properties": {
+          "agent_version": {
+            "type": "string",
+            "maxLength": 32,
+            "title": "Agent Version"
+          },
+          "queue_depth": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Queue Depth"
+          },
+          "state": {
+            "type": "string",
+            "maxLength": 50,
+            "title": "State"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "agent_version",
+          "queue_depth",
+          "state"
+        ],
+        "title": "DeviceHeartbeatRequest"
+      },
+      "DeviceHeartbeatResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "ok"
+          },
+          "received_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Received At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "received_at"
+        ],
+        "title": "DeviceHeartbeatResponse"
+      },
+      "DeviceListItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "public_id": {
+            "type": "string",
+            "title": "Public Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "computed_status": {
+            "type": "string",
+            "title": "Computed Status"
+          },
+          "enrolled_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enrolled At"
+          },
+          "last_seen_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Seen At"
+          },
+          "last_sync_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Sync At"
+          },
+          "agent_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Agent Version"
+          },
+          "pending_queue_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pending Queue Count"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "public_id",
+          "status",
+          "computed_status"
+        ],
+        "title": "DeviceListItem"
+      },
+      "DeviceRevokeResponse": {
+        "properties": {
+          "device_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Device Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "revoked"
+          },
+          "revoked_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Revoked At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "device_id",
+          "revoked_at"
+        ],
+        "title": "DeviceRevokeResponse"
+      },
+      "DeviceRotateCredentialResponse": {
+        "properties": {
+          "device_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Device Id"
+          },
+          "public_id": {
+            "type": "string",
+            "title": "Public Id"
+          },
+          "credential": {
+            "type": "string",
+            "title": "Credential"
+          },
+          "credential_version": {
+            "type": "integer",
+            "title": "Credential Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "device_id",
+          "public_id",
+          "credential",
+          "credential_version"
+        ],
+        "title": "DeviceRotateCredentialResponse"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "IndicatorDistribution": {
+        "properties": {
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "percentage": {
+            "type": "number",
+            "title": "Percentage"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "category",
+          "count",
+          "percentage"
+        ],
+        "title": "IndicatorDistribution"
+      },
+      "MetricDefinition": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "sample_count": {
+            "type": "integer",
+            "title": "Sample Count"
+          },
+          "definition": {
+            "type": "string",
+            "title": "Definition"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "value",
+          "sample_count",
+          "definition"
+        ],
+        "title": "MetricDefinition"
+      },
+      "PostureBreakdown": {
+        "properties": {
+          "neck_distribution": {
+            "items": {
+              "$ref": "#/components/schemas/IndicatorDistribution"
+            },
+            "type": "array",
+            "title": "Neck Distribution"
+          },
+          "trunk_distribution": {
+            "items": {
+              "$ref": "#/components/schemas/IndicatorDistribution"
+            },
+            "type": "array",
+            "title": "Trunk Distribution"
+          },
+          "upper_arm_distribution": {
+            "items": {
+              "$ref": "#/components/schemas/IndicatorDistribution"
+            },
+            "type": "array",
+            "title": "Upper Arm Distribution"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "neck_distribution",
+          "trunk_distribution",
+          "upper_arm_distribution"
+        ],
+        "title": "PostureBreakdown"
+      },
+      "ReportScopePreviewResponse": {
+        "properties": {
+          "total_matching": {
+            "type": "integer",
+            "title": "Total Matching"
+          },
+          "capped_count": {
+            "type": "integer",
+            "title": "Capped Count"
+          },
+          "max_export_limit": {
+            "type": "integer",
+            "title": "Max Export Limit"
+          },
+          "valid_count": {
+            "type": "integer",
+            "title": "Valid Count"
+          },
+          "insufficient_count": {
+            "type": "integer",
+            "title": "Insufficient Count"
+          },
+          "invalid_count": {
+            "type": "integer",
+            "title": "Invalid Count"
+          },
+          "earliest_captured_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Earliest Captured At"
+          },
+          "latest_captured_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Captured At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "total_matching",
+          "capped_count",
+          "max_export_limit",
+          "valid_count",
+          "insufficient_count",
+          "invalid_count"
+        ],
+        "title": "ReportScopePreviewResponse"
+      },
+      "TokenCreateRequest": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Label"
+          },
+          "expires_in_minutes": {
+            "type": "integer",
+            "maximum": 60.0,
+            "minimum": 1.0,
+            "title": "Expires In Minutes",
+            "default": 15
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "label"
+        ],
+        "title": "TokenCreateRequest"
+      },
+      "TokenCreateResponse": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Token"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires At"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "token",
+          "expires_at",
+          "label"
+        ],
+        "title": "TokenCreateResponse"
+      },
+      "UserMeResponse": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "User Id"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
+          },
+          "organization_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Organization Id"
+          },
+          "organization_slug": {
+            "type": "string",
+            "title": "Organization Slug"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "user_id",
+          "email",
+          "organization_id",
+          "organization_slug",
+          "role"
+        ],
+        "title": "UserMeResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
