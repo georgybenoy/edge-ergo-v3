@@ -1,307 +1,353 @@
+<div align="center">
+
+![EdgeErgo Banner](docs/assets/banner.svg)
+
 # EdgeErgo V3
 
-> **Privacy-Preserving Workplace Ergonomic Assessment Platform**
->
-> An enterprise-grade, edge-first ergonomics platform that estimates workstation posture locally via computer vision, computes validated upper-body screening indicators, and provides real-time, non-punitive desktop feedback without transmitting biometric data.
+**Privacy-Preserving Workplace Ergonomic Assessment &amp; Posture Intelligence**
+
+An enterprise-grade, edge-first ergonomics platform that estimates workstation posture locally via computer vision, computes validated upper-body screening indicators, and provides real-time, non-punitive desktop feedback without ever storing or transmitting biometric data.
+
+[![Python](https://img.shields.io/badge/Python-3.10.11-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![React](https://img.shields.io/badge/React-18.x-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Vite](https://img.shields.io/badge/Vite-5.x-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
+[![Supabase](https://img.shields.io/badge/Supabase-Postgres_15-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com)
+[![Windows](https://img.shields.io/badge/Windows-10%2F11_64--bit-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://microsoft.com/windows)
+[![Privacy First](https://img.shields.io/badge/Privacy-Zero_Biometric_Retention-8B5CF6?style=for-the-badge&logo=shield&logoColor=white)](#-privacy-boundary-guarantee)
 
 ---
 
-## 1. Privacy Boundary Statement (Non-Negotiable)
-
-- **Local Inference Only:** Camera frames, video buffers, face crops, and raw coordinate landmarks are processed exclusively in volatile workstation RAM. They are **never** stored on disk, never uploaded to central services, and never logged.
-- **Strictly Minimized Telemetry:** The edge agent sends only allowlisted, aggregated assessment records (UUID, timestamp, validity state, versioned scoring indicators, and guidance codes) over HTTPS with `extra="forbid"` schema validation.
-- **No Diagnostic or Ranking Claims:** EdgeErgo is an ergonomic screening indicator and proactive posture habit guide. It is **not** a clinical diagnostic medical device and **must never** be used for employee performance evaluation or ranking.
+### [✨ Key Features](#-key-features) • [🔒 Privacy Boundary](#-privacy-boundary-guarantee) • [📐 Architecture](#-system-architecture) • [🚀 Quick Start](#-quick-start) • [📋 Project Layout](#-repository-layout) • [📖 Documentation](#-documentation-index)
 
 ---
 
-## 2. Architecture Overview
+</div>
 
-```text
-+------------------------------------+        +-----------------------------+        +-----------------------------+
-|         Windows Edge Agent         |        |       Hosted REST API       |        |      Supabase Postgres      |
-|        (Python 3.10 / PyQt)        |  HTTPS |          (FastAPI)          |  Pool  |            + RLS            |
-|  - MediaPipe Pose (Volatile RAM)   |=======>|  - Asymmetric JWKS Auth     |=======>|  - Multi-Tenant RLS         |
-|  - RULA Upper-Body Scorer          | Batch  |  - Device Auth & Idempotency|  6543  |  - Assessment Events        |
-|  - SQLite FIFO Sync Spool          | Ingest |  - Fail-Closed Security     |        |  - Revocable Devices        |
-|  - Compact Floating Overlay        |        |  - Rate Limiting & Logs     |        |  - pg_cron Retention Purge  |
-+------------------------------------+        +-----------------------------+        +-----------------------------+
-                                                             ^
-                                                             | HTTPS / JWT
-                                              +-----------------------------+
-                                              |     React Web Dashboard     |
-                                              |      (React 18 / Vite)      |
-                                              |  - Supabase Auth            |
-                                              |  - Non-Interpolated Trends  |
-                                              |  - Device Enrollment/Revoke |
-                                              |  - Sanitized CSV Export     |
-                                              +-----------------------------+
+<br/>
+
+## 🌟 Key Features
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <h3>🧠 On-Device Vision Intelligence</h3>
+      <ul>
+        <li><b>MediaPipe Pose Estimation:</b> 33 skeletal landmarks computed directly on the local CPU in volatile RAM.</li>
+        <li><b>Zero Video Persistence:</b> Webcam frames are analyzed in memory and instantly overwritten. Zero video files, frame snapshots, or face crops ever touch disk or network.</li>
+      </ul>
+    </td>
+    <td width="50%" valign="top">
+      <h3>📐 Validated RULA Ergonomics</h3>
+      <ul>
+        <li><b>Biomechanical Screening:</b> Validated Rapid Upper Limb Assessment (McAtamney &amp; Corlett, 1993) adapted for standard office workstations.</li>
+        <li><b>Temporal Smoothing &amp; Hysteresis:</b> Eliminates alert fatigue by requiring sustained posture trends before triggering guidance.</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <h3>🖥️ Focus-Free Desktop Coaching</h3>
+      <ul>
+        <li><b>PySide6 Floating Overlay:</b> Minimalist, dark charcoal desktop widget with subtle posture indicators and gentle habit nudges.</li>
+        <li><b>Zero Focus Interruption:</b> Operates with <code>WindowDoesNotAcceptFocus</code> to prevent disrupting active workflows or typing.</li>
+      </ul>
+    </td>
+    <td width="50%" valign="top">
+      <h3>📊 Multi-Tenant Cloud Dashboard</h3>
+      <ul>
+        <li><b>Enterprise Postgres &amp; RLS:</b> Strict tenant isolation enforced at the database layer via Supabase Row-Level Security.</li>
+        <li><b>Actionable Ergonomic Analytics:</b> Non-interpolated time-series trends, workstation fleet status, and audit-ready sanitized exports.</li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
+<br/>
+
+---
+
+## 🔒 Privacy Boundary Guarantee
+
+> [!IMPORTANT]
+> **Strict Non-Diagnostic &amp; Non-Punitive Notice**  
+> EdgeErgo is an ergonomic habit coach and screening indicator. It is **not** a clinical diagnostic medical device and **must never** be used for employee surveillance, performance grading, or workplace ranking.
+
+```
+       WORKSTATION LOCAL PRIVACY BOUNDARY (VOLATILE RAM)
+  [Webcam Stream] ──> [MediaPipe Pose] ──> [Feature Extraction] 
+                                                    │
+             ❌ DISCARDED IMMEDIATELY:              ▼
+             - Raw video & image frames    [RULA Scorer] ──> [Local Floating Overlay]
+             - Facial crops & identity              │
+             - Raw (X, Y, Z) coordinates            │ (Allowlisted Aggregated Telemetry Only)
+  ──────────────────────────────────────────────────┼───────────────────────────────────────
+                    CLOUD SYNC BOUNDARY             ▼
+                                           [HTTPS Batch Ingest]
 ```
 
+### Data Handling Matrix
+
+| Data Category | Handled In | Persisted to Disk? | Transmitted to Cloud? |
+|---|:---:|:---:|:---:|
+| **Raw Video Frames / Image Feeds** | Volatile RAM only | ❌ **Never** | ❌ **Never** |
+| **Facial Imagery & Biometrics** | Volatile RAM only | ❌ **Never** | ❌ **Never** |
+| **Raw 33-Point Skeleton Coordinates** | Volatile RAM only | ❌ **Never** | ❌ **Never** |
+| **Device Secrets (Auth Tokens)** | Windows Credential Manager | ✅ Encrypted (DPAPI) | ❌ **Never** |
+| **Aggregated Ergonomic Indicators** *(Score, Duration, Validity)* | SQLite FIFO Spool | ✅ Encrypted / Local | ✅ HTTPS Batch Sync |
+
+<br/>
+
 ---
 
-## 3. System Requirements & Prerequisites
+## 📐 System Architecture
 
-| Component | Requirements |
-|---|---|
-| **Python** | Python `3.10.x` (64-bit AMD64). Verified on Python 3.10.11. |
-| **Node.js** | Node.js `>= 18.x` and npm `>= 9.x`. Verified on Node.js v22.23.2, npm 10.9.8. |
-| **OS Support** | **Windows 10/11 (64-bit)** for the Edge Agent (PySide6, Windows Credential Manager, webcam).<br>**Linux, macOS, or Windows** for the Hosted API and React Web Dashboard. |
-| **Git** | Standard Git client. |
-| **Cloud Services** | (Optional for production) [Supabase](https://supabase.com) (Postgres 15+ & Auth) and [Render](https://render.com). |
+### End-to-End Component Flow
 
----
+```mermaid
+flowchart LR
+    subgraph Client[" 🖥️ Windows Workstation (Local Edge) "]
+        direction TB
+        CAM["📷 Webcam / Feed"] -->|"Volatile RAM"| MP["🧠 MediaPipe Pose Lite"]
+        MP -->|"Angles & Quality"| RULA["📐 RULA Scorer"]
+        RULA -->|"Real-time Feedback"| OVL["🪟 PySide6 Overlay"]
+        RULA -->|"Aggregated Telemetry"| DB_LOCAL[("💾 SQLite FIFO Spool")]
+        DB_LOCAL -->|"Worker Sync"| SYNC["📡 Sync Client"]
+    end
 
-## 4. Repository Layout
+    subgraph Backend[" ☁️ Cloud Services (Render & Supabase) "]
+        direction TB
+        API["⚡ FastAPI Ingest Service\n(Asymmetric JWKS & Rate Limiting)"]
+        PG[("🐘 Supabase PostgreSQL 15\n(Multi-Tenant RLS & pg_cron)")]
+        WEB["📊 React 18 Web Dashboard\n(Vite + TailwindCSS)"]
+        
+        API -->|"Pool 6543 / Service Role"| PG
+        PG <-->|"JWT / Authenticated Queries"| WEB
+    end
 
-```text
-.
-├── backend/                # FastAPI backend service (Render Web Service)
-│   ├── app/                # Application modules (api, core, db, models, schemas, services)
-│   ├── tests/              # Pytest test suite (auth, devices, telemetry, RLS, security)
-│   ├── pyproject.toml      # Pinned backend dependencies & tools
-│   ├── requirements.txt    # Production dependencies for container/Render builds
-│   └── alembic.ini         # Developer schema migration utility
-├── edge-agent/             # Windows desktop edge agent
-│   ├── edge_ergo/          # Agent core (camera, vision, quality, features, scoring, overlay, storage, sync)
-│   ├── tests/              # Unit and integration test suite (camera, pose, RULA, SQLite, sync)
-│   ├── edge-ergo.spec      # PyInstaller standalone packaging specification
-│   └── pyproject.toml      # Pinned edge agent dependencies & tools
-├── frontend/               # Analytics web dashboard (Render Static Site)
-│   ├── src/                # React source (app, components, features, lib, pages)
-│   ├── package.json        # Pinned frontend dependencies
-│   ├── vite.config.ts      # Vite & Vitest configuration
-│   └── tailwind.config.ts  # Tailored design system tokens
-├── supabase/               # Database migrations & local configuration
-│   ├── config.toml         # Supabase CLI project configuration
-│   ├── migrations/         # Canonical SQL migrations (schema, RLS policies, functions, pg_cron)
-│   └── seed.sql            # Base organization seed
-├── docs/                   # Authoritative architectural documentation & runbooks
-│   ├── MANUAL_RUNBOOK.md   # Chronologically ordered, de-duplicated manual runbook (Groups A–H)
-│   ├── ACCEPTANCE.md       # Full acceptance criteria & design traceability matrix
-│   ├── ENVIRONMENT.md      # Standardized environment variables specification
-│   ├── SCORING_METHOD.md   # Validated RULA upper-body screening methodology
-│   ├── LIMITATIONS.md      # Physical camera and algorithmic boundaries
-│   ├── PRIVACY.md          # Workplace privacy notice and data flow disclosure
-│   ├── DEPLOYMENT.md       # Render cloud deployment guide
-│   ├── DATABASE.md         # Database schema, RLS policies, and retention schedules
-│   ├── SYNC_PROTOCOL.md    # Offline spooling and synchronization protocol
-│   └── DECISIONS.md        # Architectural decision records (ADRs)
-├── scripts/                # Automated verification, benchmarking, and build tooling
-│   ├── build_agent.ps1     # Windows PyInstaller build and smoke automation script
-│   ├── inspect_bundle.py   # Security scanner for packaged desktop bundle
-│   ├── check_secrets.py    # Zero-tolerance secret pattern scanner
-│   ├── smoke_test.py       # Production acceptance black-box smoke suite
-│   ├── benchmark_edge.py   # Edge CPU, RAM, and inference latency profiler
-│   ├── dev.ps1             # PowerShell developer runner (test, lint, typecheck, build)
-│   └── dev.sh              # Unix/Bash developer runner
-├── render.yaml             # Render Infrastructure-as-Code Blueprint
-├── MANUAL_TASKS.md         # High-level checklist referencing docs/MANUAL_RUNBOOK.md
-└── PRD.md                  # Authoritative Product Requirements Document
+    SYNC -->|"HTTPS Batch POST (eet_...)"| API
 ```
 
+<br/>
+
 ---
 
-## 5. Quick Start: Clean Checkout to Running All Three Components
+## 💻 System Requirements & Prerequisites
 
-Follow these exact steps from a freshly cloned repository.
+| Component | Minimum Requirements | Verified Environments |
+|---|---|---|
+| **Python** | Python `3.10.x` (64-bit AMD64) | Python `3.10.11` |
+| **Node.js & npm** | Node.js `>= 18.x`, npm `>= 9.x` | Node.js `v22.23.2`, npm `10.9.8` |
+| **Desktop OS** | **Windows 10 / 11 (64-bit)** for Edge Agent | Windows 11 Enterprise / Pro (x64) |
+| **Server & Web OS** | **Linux, macOS, or Windows** for API & Dashboard | Ubuntu 22.04 LTS, macOS Sonoma, Windows 11 |
+| **Webcam Hardware** | Standard USB or integrated 720p/1080p camera | DirectShow compatible (30 FPS) |
 
-### Step 5.1: Clone and Prepare Environment
+<br/>
+
+---
+
+## 📁 Repository Layout
+
+```
+edge-ergo-v3/
+├── 📂 backend/               # FastAPI backend service (Render Web Service)
+│   ├── app/                 # Core API, database models, schemas, and services
+│   ├── tests/               # Pytest test suite (auth, devices, telemetry, RLS)
+│   ├── pyproject.toml       # Pinned backend dependencies
+│   └── requirements.txt     # Production container dependencies
+├── 📂 edge-agent/            # Windows desktop edge agent
+│   ├── edge_ergo/           # Vision pipeline, RULA scoring, overlay, sync spool
+│   ├── tests/               # Comprehensive unit and integration test suite
+│   ├── edge-ergo.spec       # PyInstaller standalone binary packaging spec
+│   └── pyproject.toml       # Pinned agent dependencies
+├── 📂 frontend/              # Analytics web dashboard (Render Static Site)
+│   ├── src/                 # React 18 source (components, pages, lib, features)
+│   ├── package.json         # Pinned frontend dependencies
+│   ├── vite.config.ts       # Vite & Vitest configuration
+│   └── tailwind.config.ts   # Charcoal & violet design system tokens
+├── 📂 supabase/              # Database schema migrations & seeds
+│   ├── migrations/          # Canonical SQL migrations (RLS, functions, pg_cron)
+│   └── seed.sql             # Base organization seed fixtures
+├── 📂 docs/                  # Authoritative architectural documentation & runbooks
+│   ├── MANUAL_RUNBOOK.md    # Master step-by-step operator runbook (Groups A–H)
+│   ├── SCORING_METHOD.md    # Validated RULA upper-body screening methodology
+│   └── PRIVACY.md           # Workplace privacy disclosure & employee notice
+├── 📂 scripts/               # Developer runners, benchmark, and security tooling
+│   ├── dev.ps1 / dev.sh     # Unified verification runners
+│   ├── check_secrets.py     # Zero-tolerance secret pattern scanner
+│   └── build_agent.ps1      # Windows PyInstaller packaging automation
+└── render.yaml              # Render Infrastructure-as-Code Blueprint
+```
+
+<br/>
+
+---
+
+## 🚀 Quick Start
+
+Follow these steps to run all three components in local development mode.
+
+### 1️⃣ Clone & Initialize
 
 ```powershell
 # Clone the repository
-git clone https://github.com/<org>/edge-ergo-v3.git
+git clone https://github.com/georgybenoy/edge-ergo-v3.git
 cd edge-ergo-v3
 
-# Verify prerequisites
+# Verify installed prerequisites
 python --version   # Must be Python 3.10.x
 node --version     # Must be >= 18.x
 ```
 
 ---
 
-### Step 5.2: Run Component 1 — Hosted REST API (FastAPI)
+### 2️⃣ Component 1 — Hosted REST API (FastAPI)
 
-1. Open a terminal session in the `backend/` directory:
-   ```bash
-   cd backend
-   ```
+```powershell
+# Navigate to backend directory
+cd backend
 
-2. Copy the environment template:
-   ```bash
-   # Windows PowerShell
-   Copy-Item .env.example .env
-   # Or Bash
-   cp .env.example .env
-   ```
-   *(In development mode with `APP_ENV=development`, default values allow running the API server locally without external cloud dependencies.)*
+# Create local environment file
+Copy-Item .env.example .env
 
-3. Install backend dependencies in your active Python 3.10 environment:
-   ```bash
-   pip install -e ".[dev]"
-   ```
+# Install backend dependencies
+pip install -e ".[dev]"
 
-4. Launch the FastAPI server:
-   ```bash
-   python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-   ```
+# Launch the development server
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
 
-5. **Verify it is running:**
-   Open a separate terminal and query the readiness probe:
-   ```bash
-   curl http://localhost:8000/health/ready
-   # Expected output: {"status":"ready","database":"...","timestamp":...}
-   ```
-   The interactive API docs are available in development at [http://localhost:8000/docs](http://localhost:8000/docs).
+> **Verification:** Query readiness at `http://localhost:8000/health/ready`.  
+> Interactive OpenAPI documentation is available at [http://localhost:8000/docs](http://localhost:8000/docs).
 
 ---
 
-### Step 5.3: Run Component 2 — Web Dashboard (React + Vite)
+### 3️⃣ Component 2 — Web Dashboard (React + Vite)
 
-1. Open a new terminal session in the `frontend/` directory:
-   ```bash
-   cd frontend
-   ```
+Open a new terminal session:
 
-2. Copy the frontend environment template:
-   ```bash
-   # Windows PowerShell
-   Copy-Item .env.example .env
-   # Or Bash
-   cp .env.example .env
-   ```
-   *(By default, `VITE_API_BASE_URL` points to `http://localhost:8000`.)*
+```powershell
+# Navigate to frontend directory
+cd frontend
 
-3. Install dependencies:
-   ```bash
-   npm install
-   ```
+# Create local environment file
+Copy-Item .env.example .env
 
-4. Start the Vite development server:
-   ```bash
-   npm run dev -- --port 5173
-   ```
+# Install dependencies and start Vite
+npm install
+npm run dev -- --port 5173
+```
 
-5. **Access the Dashboard:**
-   Open your browser to [http://localhost:5173](http://localhost:5173).
-   - In development mode, a persistent **"DEVELOPMENT FIXTURE DATA"** banner is available. This enables full exploration of the **Overview** (KPIs, non-interpolated trend charts, posture breakdown), **Assessments** (filter controls, joint angle drawer), **Devices** (workstation statuses, single-use token enrollment), and **Reports** (scope preview, sanitized CSV export) without requiring live Supabase cloud credentials.
+> **Access Dashboard:** Open [http://localhost:5173](http://localhost:5173) in your browser.  
+> *In development mode, a persistent **"DEVELOPMENT FIXTURE DATA"** banner enables full exploration of all charts, filters, device tables, and reports without cloud credentials.*
 
 ---
 
-### Step 5.4: Run Component 3 — Windows Desktop Edge Agent
+### 4️⃣ Component 3 — Windows Desktop Edge Agent
 
-1. Open a new terminal session in the `edge-agent/` directory:
-   ```bash
-   cd edge-agent
-   ```
+Open a new terminal session:
 
-2. Install dependencies:
-   ```bash
-   pip install -e ".[dev]"
-   ```
+```powershell
+# Navigate to edge-agent directory
+cd edge-agent
 
-3. **Run the Offline Self-Test:**
-   Verifies OpenCV, MediaPipe, NumPy, PySide6, SQLite schema migrations in a temporary directory, and the feature extraction pipeline:
-   ```bash
-   python -m edge_ergo.main --selftest
-   # Expected output: [PASS] Selftest completed successfully! Edge agent core is functional.
-   ```
+# Install agent dependencies
+pip install -e ".[dev]"
 
-4. **Run in Simulation Mode (No Webcam Required):**
-   Executes the desktop agent with synthetic in-memory posture frames and launches the compact floating overlay:
-   ```bash
-   python -m edge_ergo.main --fake-camera --dry-run
-   ```
-   - A dark charcoal floating overlay appears on your desktop.
-   - You can drag the overlay anywhere.
-   - It updates smoothly without stealing focus from active applications (`Qt.WindowType.WindowDoesNotAcceptFocus`).
+# 1. Run the offline self-test (validates OpenCV, MediaPipe, NumPy, PySide6)
+python -m edge_ergo.main --selftest
 
-5. **Run with Live Webcam Posture Tracking:**
-   ```bash
-   python -m edge_ergo.main
-   ```
-   - Connects to your default webcam (hardware index 0) via OpenCV DirectShow.
-   - Evaluates posture every 5 seconds.
-   - When poor posture (e.g. forward head tilt > 20° or trunk slouching > 20°) is sustained for 3 consecutive intervals, gentle non-intrusive visual guidance is displayed.
+# 2. Run simulation mode (No webcam required; launches floating overlay)
+python -m edge_ergo.main --fake-camera --dry-run
 
-6. **Enroll the Agent with the Local Hosted API:**
-   - On the web dashboard at [http://localhost:5173/devices](http://localhost:5173/devices), click **Enroll New Device** and copy the generated token (e.g. `eet_...`).
-   - Run the enrollment command:
-     ```bash
-     python -m edge_ergo.main enroll --api http://127.0.0.1:8000 --token <ENROLLMENT_TOKEN>
-     ```
-   - The device secret is stored securely in **Windows Credential Manager** (DPAPI). The agent can now sync posture telemetry batches to the local API.
+# 3. Run live webcam posture tracking
+python -m edge_ergo.main
+```
+
+> **Device Enrollment:**  
+> On the web dashboard at `http://localhost:5173/devices`, click **Enroll New Device** and copy the generated token (`eet_...`).  
+> ```powershell
+> python -m edge_ergo.main enroll --api http://127.0.0.1:8000 --token <ENROLLMENT_TOKEN>
+> ```
+> The device secret is stored securely in **Windows Credential Manager** (DPAPI).
 
 ---
 
-### Step 5.5: Build the Standalone Windows Executable (Optional)
+### 5️⃣ Standalone Windows Packaging (PyInstaller)
 
-To package the agent into a self-contained Windows executable that requires no Python runtime:
+To package the agent into a single distribution that requires no installed Python runtime:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/build_agent.ps1
 ```
+The executable is generated at `edge-agent/dist/edge-ergo/edge-ergo.exe`.
 
-The script:
-1. Cleans previous builds.
-2. Runs PyInstaller against `edge-agent/edge-ergo.spec`.
-3. Runs `scripts/inspect_bundle.py` to ensure zero `.env` files, zero SQLite databases, and zero hardcoded secrets exist in the distribution.
-4. Executes smoke verification: `edge-ergo.exe --version` and `edge-ergo.exe --selftest`.
-5. Outputs the standalone distribution to `edge-agent/dist/edge-ergo/edge-ergo.exe`.
+<br/>
 
 ---
 
-## 6. Automated Verification Runner
+## 🛠️ Unified Quality Gate & Developer Runner
 
-Execute the complete quality gate across all three components with a single command:
+Execute linting, type-checking, secret scanning, and full test suites with a single command:
 
-### Windows PowerShell:
 ```powershell
-# Run all checks (secret scan, lint, typecheck, tests, production build)
+# Run the complete test suite across all 3 stacks
 .\scripts\dev.ps1 all
 
-# Or run individual checks:
+# Or run individual verification stages:
 .\scripts\dev.ps1 check-secrets  # Zero-tolerance secret pattern scan
-.\scripts\dev.ps1 lint           # Ruff (Python) and ESLint (TypeScript)
-.\scripts\dev.ps1 typecheck      # Mypy and tsc -b
-.\scripts\dev.ps1 test           # Pytest (backend + agent) and Vitest (frontend)
-.\scripts\dev.ps1 build          # Frontend production bundle build
+.\scripts\dev.ps1 lint           # Ruff (Python) & ESLint (TypeScript)
+.\scripts\dev.ps1 typecheck      # Mypy & TypeScript project compiler (tsc -b)
+.\scripts\dev.ps1 test           # Pytest (Backend + Agent) & Vitest (Frontend)
+.\scripts\dev.ps1 build          # Production frontend build
 ```
 
-### Linux / macOS (Bash):
-```bash
-chmod +x ./scripts/dev.sh
-./scripts/dev.sh all
-```
+*(On Linux / macOS systems, use `./scripts/dev.sh all`)*
+
+<br/>
 
 ---
 
-## 7. Known Limitations and Unverified Claims
+## 📋 Verification Status & Transparency
 
-In accordance with PRD §12 and DESIGN §17, EdgeErgo strictly avoids claiming achievements that have not been physically verified. The following 4 items from [docs/ACCEPTANCE.md](docs/ACCEPTANCE.md) are categorized as **Pending manual** and await physical deployment or human clinical sign-off:
+In accordance with PRD §12 and DESIGN §17, EdgeErgo maintains strict transparency regarding verified capabilities versus pending manual reviews:
 
-| Item | Requirement | Verification Status & Required Manual Action | Reference |
-|---|---|---|---|
-| **PRD §12 #16** | **Live Render Production Deployment** | **Pending manual cloud operator action.**<br>The Infrastructure Blueprint (`render.yaml`), health endpoints (`/health/live`, `/health/ready`), and local production verification harness (`scripts/verify_production_local.py`) pass 12/12 checks. However, live cloud instances on Render have not been provisioned. This requires a human operator to link the GitHub repository in the Render Dashboard and configure secrets. | [docs/MANUAL_RUNBOOK.md Group D](docs/MANUAL_RUNBOOK.md#group-d-render-cloud-deployment) |
-| **PRD §12 #18** | **Clean-Machine Windows VM Test** | **Pending manual pilot workstation testing.**<br>The standalone Windows executable builds cleanly via PyInstaller and passes `--selftest` in the developer environment. Testing the executable on a fresh, non-developer Windows 10/11 laptop (clean OS without Python, Git, or C++ build tools installed) is scheduled for the pilot cohort roll-out. | [docs/MANUAL_RUNBOOK.md Group E](docs/MANUAL_RUNBOOK.md#group-e-windows-agent-packaging--clean-machine-test) |
-| **PRD §12 #19** | **Real Hardware Performance Benchmarks** | **Pending physical pilot workstation measurement.**<br>The benchmarking profiler (`scripts/benchmark_edge.py`) is verified. In accordance with anti-fabrication policies, hardware latency (p50/p95), CPU %, and memory RSS fields in [docs/PERFORMANCE_TEMPLATE.md](docs/PERFORMANCE_TEMPLATE.md) are left unpopulated (`[   ]`) until measured on physical pilot participant laptops. | [docs/MANUAL_RUNBOOK.md Group G](docs/MANUAL_RUNBOOK.md#group-g-performance--hardware-measurements) |
-| **PRD §12 #8, #21** | **Clinical Ergonomist Sign-Off & Consent** | **Pending pilot roll-out reviews.**<br>The RULA upper-body screening algorithm is scientifically documented in [docs/SCORING_METHOD.md](docs/SCORING_METHOD.md). Formal written sign-off from an independent Certified Professional Ergonomist (CPE) and physical proxy packet capture (mitmproxy/Wireshark) are to be completed prior to live employee tracking. | [docs/MANUAL_RUNBOOK.md Group H](docs/MANUAL_RUNBOOK.md#group-h-clinical--legal-reviews) |
+| Item | Requirement | Verification Status | Action Runbook |
+|---|---|---|:---:|
+| **PRD §12 #16** | **Live Render Production Deployment** | ⏳ **Pending Cloud Operator Linking**<br>Blueprint (`render.yaml`) and local production container test pass 12/12 checks. Live cloud provisioning requires connecting the repository in the Render dashboard. | [Runbook Group D](docs/MANUAL_RUNBOOK.md#group-d-render-cloud-deployment) |
+| **PRD §12 #18** | **Clean-Machine Windows VM Test** | ⏳ **Pending Pilot Cohort Rollout**<br>PyInstaller executable builds cleanly and passes `--selftest`. Fresh OS testing on a non-developer Windows 10/11 laptop is scheduled for pilot deployment. | [Runbook Group E](docs/MANUAL_RUNBOOK.md#group-e-windows-agent-packaging--clean-machine-test) |
+| **PRD §12 #19** | **Physical Hardware Benchmarks** | ⏳ **Pending Workstation Measurement**<br>Profiler script (`scripts/benchmark_edge.py`) verified. Latency (p50/p95) and RAM usage are reserved for physical measurement on pilot participant machines. | [Runbook Group G](docs/MANUAL_RUNBOOK.md#group-g-performance--hardware-measurements) |
+| **PRD §12 #8** | **Clinical Ergonomist Sign-Off** | ⏳ **Pending Pre-Pilot Formal Review**<br>Scientific documentation complete in [docs/SCORING_METHOD.md](docs/SCORING_METHOD.md). Formal written review from a Certified Professional Ergonomist (CPE) precedes active employee tracking. | [Runbook Group H](docs/MANUAL_RUNBOOK.md#group-h-clinical--legal-reviews) |
+
+<br/>
 
 ---
 
-## 8. Authoritative Documentation Index
+## 📖 Documentation Index
 
-For in-depth operational procedures, consult the linked documents:
+| Guide / Specification | Description |
+|---|---|
+| 📘 **[docs/MANUAL_RUNBOOK.md](docs/MANUAL_RUNBOOK.md)** | Master operational runbook covering setup, deployment, testing, and audits (Groups A–H). |
+| 📐 **[docs/SCORING_METHOD.md](docs/SCORING_METHOD.md)** | Validated RULA upper-body ergonomic screening algorithms, angle thresholds, and lookup tables. |
+| 🔒 **[docs/PRIVACY.md](docs/PRIVACY.md)** | Technical privacy architecture, employee privacy notice, and biometric boundary disclosures. |
+| 🛡️ **[docs/SECURITY.md](docs/SECURITY.md)** | Zero-trust threat model, credential management, cryptographic tokens, and fail-closed policies. |
+| 🗄️ **[docs/DATABASE.md](docs/DATABASE.md)** | Supabase PostgreSQL schema, Row-Level Security policies, and pg_cron retention schedules. |
+| 🔄 **[docs/SYNC_PROTOCOL.md](docs/SYNC_PROTOCOL.md)** | Workstation offline spooling, SQLite FIFO queue, idempotency keys, and sync worker protocol. |
+| 🌐 **[docs/API.md](docs/API.md)** | Complete REST API contract, request/response schemas, and JWT authentication workflows. |
+| ⚖️ **[docs/AUTHZ_MATRIX.md](docs/AUTHZ_MATRIX.md)** | Multi-tenant role permissions matrix (Anonymous, Enrolled Device, Viewer, Admin). |
+| ⚠️ **[docs/LIMITATIONS.md](docs/LIMITATIONS.md)** | Optical and physical boundaries of 2D monocular webcam posture screening. |
+| 🛠️ **[docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)** | Systematic diagnostic workflows for webcam initialization, network spooling, and token errors. |
+| 🏗️ **[docs/DECISIONS.md](docs/DECISIONS.md)** | Architectural Decision Records (ADRs) documenting design rationale. |
 
-- **[docs/MANUAL_RUNBOOK.md](docs/MANUAL_RUNBOOK.md)** — Consolidated, chronologically ordered manual runbook (Sections A–H).
-- **[docs/ACCEPTANCE.md](docs/ACCEPTANCE.md)** — Pilot acceptance criteria and design traceability matrix.
-- **[docs/PROGRESS.md](docs/PROGRESS.md)** — Comprehensive implementation log and verification evidence.
-- **[docs/SCORING_METHOD.md](docs/SCORING_METHOD.md)** — Validated RULA upper-body scoring methodology and lookups.
-- **[docs/LIMITATIONS.md](docs/LIMITATIONS.md)** — Scientific limitations of 2D webcam posture screening.
-- **[docs/PRIVACY.md](docs/PRIVACY.md)** — Technical privacy guarantees and employee pilot notice.
-- **[docs/ENVIRONMENT.md](docs/ENVIRONMENT.md)** — Canonical environment variable dictionary.
-- **[docs/DATABASE.md](docs/DATABASE.md)** — Database schema, RLS policy matrix, and retention schedules.
-- **[docs/SYNC_PROTOCOL.md](docs/SYNC_PROTOCOL.md)** — Offline spooling and synchronization protocol specification.
-- **[docs/AUTHZ_MATRIX.md](docs/AUTHZ_MATRIX.md)** — Multi-role API and database authorization matrix.
-- **[docs/DECISIONS.md](docs/DECISIONS.md)** — Architectural decision records (ADRs).
-- **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)** — Render cloud deployment procedures and origin locking.
-- **[docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)** — Diagnostic workflows for camera, auth, and sync issues.
+<br/>
+
+---
+
+<div align="center">
+
+**EdgeErgo Platform** • Built with privacy, accuracy, and ergonomic science.
+
+[⬆ Back to top](#edgeergo-v3)
+
+</div>

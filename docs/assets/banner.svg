@@ -1,0 +1,162 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradients -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#08090C" />
+      <stop offset="50%" stop-color="#0F1118" />
+      <stop offset="100%" stop-color="#0A0C13" />
+    </linearGradient>
+
+    <!-- Brand Accent Gradient -->
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#A78BFA" />
+      <stop offset="50%" stop-color="#8B5CF6" />
+      <stop offset="100%" stop-color="#6366F1" />
+    </linearGradient>
+
+    <!-- Emerald Accent Gradient -->
+    <linearGradient id="emeraldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34D399" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+
+    <!-- Cyan Glow Gradient -->
+    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="100%" stop-color="#818CF8" />
+    </linearGradient>
+
+    <!-- Radial Glows -->
+    <radialGradient id="glowViolet" cx="70%" cy="30%" r="50%">
+      <stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.25" />
+      <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="glowCyan" cx="20%" cy="70%" r="45%">
+      <stop offset="0%" stop-color="#06B6D4" stop-opacity="0.15" />
+      <stop offset="100%" stop-color="#06B6D4" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Grid Pattern -->
+    <pattern id="gridPattern" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#252A3B" stroke-width="0.7" stroke-opacity="0.35" />
+    </pattern>
+  </defs>
+
+  <style>
+    .title-text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight: 800; font-size: 56px; fill: #FFFFFF; letter-spacing: -1.5px; }
+    .subtitle-text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight: 400; font-size: 19px; fill: #94A3B8; letter-spacing: 0.2px; }
+    .badge-text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight: 600; font-size: 12px; letter-spacing: 0.8px; text-transform: uppercase; }
+    .node-pulse { animation: pulse 3s infinite ease-in-out; }
+  </style>
+
+  <!-- Background Base -->
+  <rect width="1200" height="360" rx="16" fill="url(#bgGrad)" />
+  
+  <!-- Subtle Background Grid -->
+  <rect width="1200" height="360" rx="16" fill="url(#gridPattern)" />
+
+  <!-- Ambient Glow Overlays -->
+  <rect width="1200" height="360" rx="16" fill="url(#glowViolet)" />
+  <rect width="1200" height="360" rx="16" fill="url(#glowCyan)" />
+
+  <!-- Outer Card Border -->
+  <rect x="1" y="1" width="1198" height="358" rx="15" fill="none" stroke="#282D42" stroke-width="1.5" stroke-opacity="0.7" />
+
+  <!-- LEFT BRAND / LOGO ICON GRAPHIC -->
+  <g transform="translate(75, 75)">
+    <!-- Shield / Silhouette Backdrop Hexagon -->
+    <polygon points="105,10 185,45 185,150 105,200 25,150 25,45" fill="#141724" stroke="#2E354F" stroke-width="2" />
+    
+    <!-- Neon Accent Glow Outline -->
+    <polygon points="105,18 177,50 177,144 105,190 33,144 33,50" fill="none" stroke="url(#accentGrad)" stroke-width="2" stroke-opacity="0.5" />
+
+    <!-- Human Posture Node Mesh (Abstract Ergonomic Skeletal Wireframe) -->
+    <!-- Head Node -->
+    <circle cx="105" cy="55" r="14" fill="#1E2337" stroke="url(#accentGrad)" stroke-width="2.5" />
+    <circle cx="105" cy="55" r="5" fill="#C4B5FD" />
+
+    <!-- Neck Line -->
+    <line x1="105" y1="69" x2="105" y2="88" stroke="#8B5CF6" stroke-width="3" stroke-linecap="round" />
+
+    <!-- Shoulder Line & Nodes -->
+    <line x1="65" y1="92" x2="145" y2="92" stroke="#6366F1" stroke-width="3" stroke-linecap="round" />
+    <circle cx="65" cy="92" r="7" fill="#1E2337" stroke="#818CF8" stroke-width="2" />
+    <circle cx="145" cy="92" r="7" fill="#1E2337" stroke="#818CF8" stroke-width="2" />
+
+    <!-- Spine / Trunk Axis -->
+    <line x1="105" y1="88" x2="105" y2="145" stroke="url(#cyanGrad)" stroke-width="3.5" stroke-linecap="round" />
+
+    <!-- Ergonomic Angle Measurement Arc (RULA visualization) -->
+    <path d="M 105 105 A 25 25 0 0 1 125 115" fill="none" stroke="#34D399" stroke-width="2.5" stroke-dasharray="3,3" />
+    <circle cx="126" cy="116" r="3" fill="#34D399" />
+
+    <!-- Pelvis / Base Axis -->
+    <line x1="78" y1="145" x2="132" y2="145" stroke="#475569" stroke-width="3" stroke-linecap="round" />
+    <circle cx="78" cy="145" r="6" fill="#1E2337" stroke="#64748B" stroke-width="2" />
+    <circle cx="132" cy="145" r="6" fill="#1E2337" stroke="#64748B" stroke-width="2" />
+
+    <!-- Upper Arm Connections -->
+    <line x1="65" y1="92" x2="52" y2="128" stroke="#475569" stroke-width="2.5" stroke-linecap="round" />
+    <line x1="145" y1="92" x2="158" y2="128" stroke="#475569" stroke-width="2.5" stroke-linecap="round" />
+    <circle cx="52" cy="128" r="5" fill="#38BDF8" />
+    <circle cx="158" cy="128" r="5" fill="#38BDF8" />
+
+    <!-- Privacy Shield Indicator (Small lock icon overlay at lower right of badge) -->
+    <g transform="translate(145, 145)">
+      <circle cx="16" cy="16" r="16" fill="#0F172A" stroke="#10B981" stroke-width="2" />
+      <path d="M12 15 V12 A4 4 0 0 1 20 12 V15 M10 15 H22 V23 H10 Z" fill="none" stroke="#34D399" stroke-width="2" stroke-linejoin="round" />
+    </g>
+  </g>
+
+  <!-- TYPOGRAPHY & HEADER CONTENT -->
+  <g transform="translate(325, 95)">
+    <!-- Version Pill -->
+    <rect x="0" y="0" width="135" height="28" rx="14" fill="#1E1B4B" stroke="#6366F1" stroke-width="1.2" />
+    <text x="67" y="18" text-anchor="middle" class="badge-text" fill="#C4B5FD">EDGE-FIRST V3.0</text>
+
+    <!-- Verified Privacy Pill -->
+    <rect x="145" y="0" width="168" height="28" rx="14" fill="#064E3B" stroke="#10B981" stroke-width="1.2" fill-opacity="0.6" />
+    <circle cx="160" cy="14" r="4" fill="#34D399" />
+    <text x="236" y="18" text-anchor="middle" class="badge-text" fill="#A7F3D0">ZERO BIOMETRIC LEAK</text>
+
+    <!-- Main Title -->
+    <text x="0" y="78" class="title-text">
+      EdgeErgo<tspan fill="url(#accentGrad)">.</tspan>
+    </text>
+
+    <!-- Subtitle / Mission Statement -->
+    <text x="0" y="115" class="subtitle-text">
+      Enterprise Privacy-Preserving Ergonomic Assessment &amp; Posture Intelligence
+    </text>
+    <text x="0" y="139" class="subtitle-text" font-size="16px" fill="#64748B">
+      Local MediaPipe pose estimation • Validated RULA scoring • Non-intrusive desktop feedback
+    </text>
+
+    <!-- Key Feature Badges Grid -->
+    <g transform="translate(0, 168)">
+      <!-- Badge 1: Local Inference -->
+      <g transform="translate(0, 0)">
+        <rect width="180" height="34" rx="8" fill="#131622" stroke="#2B324B" stroke-width="1" />
+        <text x="14" y="21" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13px" font-weight="600" fill="#E2E8F0">⚡ Volatile RAM Only</text>
+      </g>
+
+      <!-- Badge 2: RULA Screening -->
+      <g transform="translate(192, 0)">
+        <rect width="175" height="34" rx="8" fill="#131622" stroke="#2B324B" stroke-width="1" />
+        <text x="14" y="21" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13px" font-weight="600" fill="#E2E8F0">📐 Validated RULA</text>
+      </g>
+
+      <!-- Badge 3: Windows Desktop Agent -->
+      <g transform="translate(379, 0)">
+        <rect width="195" height="34" rx="8" fill="#131622" stroke="#2B324B" stroke-width="1" />
+        <text x="14" y="21" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13px" font-weight="600" fill="#E2E8F0">🖥️ PySide6 Floating UI</text>
+      </g>
+
+      <!-- Badge 4: Multi-Tenant Cloud -->
+      <g transform="translate(586, 0)">
+        <rect width="185" height="34" rx="8" fill="#131622" stroke="#2B324B" stroke-width="1" />
+        <text x="14" y="21" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13px" font-weight="600" fill="#E2E8F0">🛡️ Supabase RLS Cloud</text>
+      </g>
+    </g>
+  </g>
+</svg>
