@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 import time
-from typing import Any, cast
+from typing import Any
 from urllib.parse import urlparse
 
 import httpx
@@ -114,7 +114,7 @@ async def verify_supabase_jwt(token: str) -> dict[str, Any]:
         )
 
     # Decode options
-    options = {
+    options: Any = {
         "verify_signature": True,
         "verify_exp": True,
         "verify_nbf": True,
@@ -123,6 +123,7 @@ async def verify_supabase_jwt(token: str) -> dict[str, Any]:
         "require": ["exp", "sub", "iss", "aud"],
     }
 
+    payload: dict[str, Any]
     try:
         if alg == "HS256":
             if not settings.SUPABASE_JWT_SECRET:
@@ -154,7 +155,7 @@ async def verify_supabase_jwt(token: str) -> dict[str, Any]:
                 options=options,
                 leeway=10,
             )
-        return cast(dict[str, Any], payload)
+        return payload
     except jwt.ExpiredSignatureError as exc:
         raise AuthenticationError("Token signature has expired", code="TOKEN_EXPIRED") from exc
     except jwt.ImmatureSignatureError as exc:
