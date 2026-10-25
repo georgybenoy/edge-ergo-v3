@@ -134,7 +134,7 @@ def run_selftest() -> int:
         validity = validate_observation(estimation.landmarks)
         if not validity.is_valid:
             print(
-                f"  [FAIL] Neutral observation failed quality check: {validity.rejection_reasons}",
+                f"  [FAIL] Neutral observation failed quality check: {validity.reason_codes}",
                 file=sys.stderr,
             )
             return 1
