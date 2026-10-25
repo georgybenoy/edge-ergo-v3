@@ -39,6 +39,7 @@ jobs:
         with:
           python-version: "3.10"
           cache: "pip"
+          cache-dependency-path: backend/pyproject.toml
 
       - name: Install Dependencies
         run: |
@@ -74,6 +75,13 @@ jobs:
         with:
           python-version: "3.10"
           cache: "pip"
+          cache-dependency-path: edge-agent/pyproject.toml
+
+      - name: Install Linux System Libraries
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1 libegl1 libxkbcommon-x11-0
 
       - name: Install Dependencies
         run: |
@@ -87,6 +95,8 @@ jobs:
         run: mypy edge_ergo tests
 
       - name: Run Boundary & Unit Tests (Pytest)
+        env:
+          QT_QPA_PLATFORM: offscreen
         run: pytest tests
 
   # 4. Web Dashboard Frontend (React, Vite, TypeScript, Vitest)
@@ -155,6 +165,7 @@ jobs:
         with:
           python-version: "3.10"
           cache: "pip"
+          cache-dependency-path: backend/pyproject.toml
 
       - name: Install Dependencies
         run: |
